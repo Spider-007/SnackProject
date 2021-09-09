@@ -145,7 +145,6 @@
     <ClCompile Include="CAre.cpp" />
     <ClCompile Include="CDrawBase.cpp" />
     <ClCompile Include="CFood.cpp" />
-    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="CSnake.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -157,7 +156,6 @@
     <ClInclude Include="CAre.h" />
     <ClInclude Include="CDrawBase.h" />
     <ClInclude Include="CFood.h" />
-    <ClInclude Include="Clock.h" />
     <ClInclude Include="CSnake.h" />
     <ClInclude Include="Map.h" />
   </ItemGroup>

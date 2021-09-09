@@ -14,7 +14,7 @@ CSnake::CSnake() {				// 初始化坐標
 
 void CSnake::AddFootNake() {
 	nFootNake += 1;
-}	
+}
 
 void CSnake::AddScoreNake() {
 	nScoreNake += 10;
@@ -22,6 +22,14 @@ void CSnake::AddScoreNake() {
 
 int CSnake::getScoreNake() {
 	return nScoreNake;
+}
+
+void CSnake::setScoreNake(int score) {
+	nScoreNake = score;
+}
+
+void CSnake::setFootSnake(int score) {
+	nFootNake = score;
 }
 
 int CSnake::getFootNake() {
@@ -38,6 +46,10 @@ void CSnake::ClearSnake() {
 //將新的坐標 -> 畫到屏幕上
 void CSnake::DrawSnake() {
 	for (int j = 0; j < Snake.size(); j++) {
+		WriteChar(45, 20, "X:", FOREGROUND_RED);
+		WriteChar(46, 20, Snake[j].X, FOREGROUND_RED);
+		WriteChar(48, 20, "Y:", FOREGROUND_RED);
+		WriteChar(49, 20, Snake[j].Y, FOREGROUND_RED);
 		WriteChar(Snake[j].X, Snake[j].Y, str);//str在全局变量中，蛇身的字符显示
 	}
 }
@@ -66,7 +78,6 @@ int CSnake::MoveSnake(int nMap[MAP_X][MAP_Y], CFood& food) {
 	if (nMap[nTempX][nTempY] == 空地) {
 		//空地
 	}
-
 	else if (nMap[nTempX][nTempY] == 食物) {
 		PlaySound(TEXT("7896.wav"), NULL, SND_ASYNC | SND_NODEFAULT | SND_FILENAME); //播放音乐实现功能
 		AddScoreNake();
@@ -75,49 +86,93 @@ int CSnake::MoveSnake(int nMap[MAP_X][MAP_Y], CFood& food) {
 		food.setFoodExist(0);
 		return 1;
 	}
-
 	else if (nMap[nTempX][nTempY] == 障碍物) {
+		gameOver();
 		return 0;
 	}
-
 	else if (nMap[nTempX][nTempY] == 自己) {
 		//判斷撞到自己
+		gameOver();
 		return 0;
 	}
 
-	Snake.erase(Snake.end() - 1);	   //删除最后一个节点
+	Snake.erase(Snake.end() - 1);		//删除最后一个节点
 	Snake.insert(Snake.begin(), mTemp); //插入头节点
 
 	Snake[0].X = nTempX;//蛇的头部改为新坐标
 	Snake[0].Y = nTempY;//之后是Y
 }
 
-/**
-//撞墙
-int gameover()//游戏结束，撞墙或者撞自己
-{
-	//撞墙
-	if (Snake.xy[0].x < 0 || snake.xy[0].y < 0 || snake.xy[0].x>650 || snake.xy[0].y>480)
-	{
-		outtextxy(280, 210, "GameOver!");
-		MessageBox(hwnd, "你能歘，怼墙上了", "游戏结束", 0);
-		return 1;
-	}
-	//撞自己
-	for (int i = 1; i < snake.num; i++)
-	{
-		if (snake.xy[0].x == snake.xy[i].x && snake.xy[0].y == snake.xy[i].y)
-		{
-			outtextxy(280, 210, "GameOver！");
-			MessageBox(hwnd, "你能弄撒？撞死自己了", "游戏结束", 0);
-			return 1;
-		}
-	}
-
-	return 0;
-}
-*/
-
 void CSnake::setDir(int dir) {
 	Dir = dir;
+}
+
+int CSnake::getDir() {
+	return Dir;
+}
+
+void CSnake::setSpeed(int speed) {
+	nSpeed = speed;
+}
+
+int CSnake::getSpeed() {
+	return nSpeed;
+}
+
+//设置加速
+void CSnake::setAutoSpeed(bool isAutoSp) {
+	isAutoSpeed = isAutoSp;
+}
+
+//获取加速状态
+bool CSnake::getAutoSpeed() {
+	return isAutoSpeed;
+}
+
+//结束游戏
+void CSnake::gameOver(int x, int y, int color) {
+	system("cls");
+	WriteChar(x, y, "/ ___| __ _ _ __ ___   ___ / _ \__   _____ _ __ ", color);
+	WriteChar(x, y + 1, "| |  _ / _` | '_ ` _ \ / _ \ | | \ \ / / _ \ '__|", color);
+	WriteChar(x, y + 2, "| |_| | (_| | | | | | |  __/ |_| |\ V /  __/ |   ", color);
+	WriteChar(x, y + 3, " \____|\__,_|_| |_| |_|\___|\___/  \_/ \___|_|   ", color);
+
+	WriteChar(x + 8, y + 12, "请输入任意字符结束！", color);
+	if (_getch)
+		return;
+}
+
+//设置反方向
+void CSnake::SetState(int state)//1:反方向 2：禁止转向
+{
+	switch (state)
+	{
+	case 1:
+		m_back = time(NULL);
+		break;
+	case 2:
+		m_stop = time(NULL);
+		break;
+	default:
+		break;
+	}
+}
+
+//获取状态:
+bool CSnake::GetState(int state)//1:反方向 2：禁止转向
+{
+	switch (state)
+	{
+	case 1:
+		if (time(NULL) - m_back >= 5)return false;
+		return true;
+		break;
+	case 2:
+		if (time(NULL) - m_stop >= 5)return false;
+		return true;
+		break;
+	default:
+		break;
+	}
+	return false;
 }

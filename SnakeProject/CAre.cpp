@@ -1,12 +1,9 @@
 #include "CAre.h"
 #include "Map.h"
 #include "Clock.h"
-
+Map map;
 //欢迎界面
 void CAre::welcome(int x, int y, int color) {
-
-
-
 	WriteChar(x, y, "■■■■■　　　　　　　■■　　■　　　　　　　　■■■　　　　　　　　■　　■■　　　　　　　■■■■■", color);
 	WriteChar(x, y + 1, "■■　■■　　　　　　　■■■　■　　　　　　　　■■■　　　　　　　　■　■■■　　　　　　　■　　　　", color);
 	WriteChar(x, y + 2, "■■　　■　　　　　　　■■■　■　　　　　　　■■■■　　　　　　　　■■■■　　　　　　　　■　　　　", color);
@@ -20,25 +17,11 @@ void CAre::welcome(int x, int y, int color) {
 	gameOption();
 }
 
-//结束游戏
-void CAre::gameOver(int x, int y, int color) {
-	system("cls");
-	WriteChar(x, y,	   "  / ___| __ _ _ __ ___   ___ / _ \__   _____ _ __ ", color);
-	WriteChar(x, y + 1, "| |  _ / _` | '_ ` _ \ / _ \ | | \ \ / / _ \ '__|", color);
-	WriteChar(x, y + 2, "| |_| | (_| | | | | | |  __/ |_| |\ V /  __/ |   ", color);
-	WriteChar(x, y + 3, " \____|\__,_|_| |_| |_|\___|\___/  \_/ \___|_|   ", color);
-	
-	WriteChar(x + 8, y + 12, "请输入任意字符结束！", color);
-	if (_getch)
-		return;
-}
-
 //打开游戏界面，选择游戏模式,选择难度
 int CAre::gameOption(int x, int y, int color) {
-	Map map;
 	vector<string> mArr;
 	ShowCursor(false, 10);
-	WriteChar(x, y,		"开始游戏",	FOREGROUND_RED);
+	WriteChar(x, y, "开始游戏", FOREGROUND_RED);
 	WriteChar(x, y + 1, "简单模式", FOREGROUND_RED);
 	WriteChar(x, y + 2, "噩梦模式", FOREGROUND_RED);
 	WriteChar(x, y + 3, "炼狱模式", FOREGROUND_RED);
@@ -76,13 +59,18 @@ int CAre::gameOption(int x, int y, int color) {
 		StartGame(speed);
 		break;
 	case 5:
+	{
 		//自定义地图，自定义地图显示属性
 		system("cls");
-		map.MessageLoop();
-		break;
+		int result = map.MessageLoop();
+		if (result == 1) {
+			objSnake.gameOver();
+		}
+	}
+	break;
 	default:
 		system("cls");
-		gameOver();
+		objSnake.gameOver();
 		break;
 	}
 }
@@ -90,19 +78,21 @@ int CAre::gameOption(int x, int y, int color) {
 /**主要是界面交互*/
 void CAre::initSmallMap(int x, int y, int color) {
 	CSnake nake;
-	WriteChar(x, y + 1, "******操作提示******",					 FOREGROUND_RED);
-	WriteChar(x, y + 2, "分数:",								 FOREGROUND_RED);
-	WriteChar(x, y + 3, "步数:",								 FOREGROUND_RED);
-	WriteChar(x, y + 5, "***按下：空格键暂停***",				 FOREGROUND_RED);
-	WriteChar(x, y + 6, "***WSAD 控制上下左右，不区分大小写***", FOREGROUND_RED);
+	WriteChar(x, y + 1, "************操作提示************", FOREGROUND_RED);
+	WriteChar(x, y + 2, "分数:", FOREGROUND_RED);
+	WriteChar(x, y + 3, "步数:", FOREGROUND_RED);
+	WriteChar(x, y + 5, "空格键暂停恢复", FOREGROUND_RED);
+	WriteChar(x, y + 6, "WSAD 控制上下左右，不区分大小写", FOREGROUND_RED);
+	WriteChar(x, y + 7, "连按方向键自动加速", FOREGROUND_RED);
+	WriteChar(x, y + 8, "按键 q 添加障碍物", FOREGROUND_RED);
+	WriteChar(x, y + 12, "R-> 重新开始", FOREGROUND_RED);
 }
-
 
 //初始化地图
 void CAre::initMap() {
-	for (int i = 0; i < MAP_X; i++) {
-		for (int j = 0; j < MAP_Y; j++) {
-			if (i == 0 || j == 0 || i == MAP_X - 1 || j == MAP_Y - 1) {	//画出来地图上的四个点
+	for (int i = 0; i < MAP_X; i++) {										//行坐标
+		for (int j = 0; j < MAP_Y; j++) {									//纵坐标
+			if (i == 0 || j == 0 || i == MAP_X - 1 || j == MAP_Y - 1) {		//画出来地图上的四个点
 				nMap[i][j] = 障碍物;
 			}
 			else {
@@ -138,25 +128,63 @@ int CAre::waitKey() {
 	return 0;//没有按键，返回0
 }
 
+//添加障碍物
+void CAre::AddObstacles(int cout) {
+	//设置随机坐标值数据
+	int i = 0;
+	if (cout == 0)cout = rand() % 8;
+	while (i <= cout) {
+		int pX = rand() % MAP_X;
+		int pY = rand() % MAP_Y;
+		WriteChar(pX, pY, "ω", BACKGROUND_GREEN);
+		nMap[pX][pY] = 障碍物;
+		i++;
+	}
+}
+
 //接收用户的操作
-void CAre::GetPlay() {
+void CAre::GetPlay(int speed) {
 	Oper = waitKey();
-	switch (Oper) { //创建对象直接 set值，这样修改 安全性会更高一些
+	//创建对象直接 set值，这样修改 安全性会更高一些
+	switch (Oper) {
 	case 'w':case 'W':
+		if (objSnake.getDir() == 上) objSnake.setAutoSpeed(true);
 		objSnake.setDir(上);
 		break;
 	case 's':case 'S':
+		if (objSnake.getDir() == 下) objSnake.setAutoSpeed(true);
 		objSnake.setDir(下);
 		break;
 	case 'a':case 'A':
+		if (objSnake.getDir() == 左) objSnake.setAutoSpeed(true);
 		objSnake.setDir(左);
 		break;
 	case 'd':case 'D':
+		if (objSnake.getDir() == 右) objSnake.setAutoSpeed(true);
 		objSnake.setDir(右);
 		break;
 	case 32:
-		
+		map.SaveMap();     //存档
+		system("pause>nul");
 		break;
+	case 43://代表加速，需要减时间
+		objSnake.setSpeed(speed - 5);
+		break;
+	case 45:case 95:
+		//代表减速，需要加时间
+		objSnake.setSpeed(speed + 5);
+		break;
+	case 'q':case 'Q':
+		//按下x,生成5个障碍物
+		AddObstacles(5);
+		break;
+	case 'r':case 'R':
+
+		map.SaveMap();     //存档
+		system("cls");	   //清屏幕
+		welcome();
+		break;
+
 	default:
 		break;
 	}
@@ -164,34 +192,33 @@ void CAre::GetPlay() {
 
 //开始游戏
 void CAre::StartGame(int speed, bool isDefault) {
-	if (flag == 0 && isDefault) { //默认地图
-		initMap();				//加载地图
-		DrawMap();				//加载地图后显示界面
-		initSmallMap();			//加載小地圖
-		ShowCursor(false);
-		flag = 1;
+	if (isDefault) {
+		initMap();					//默认地图
+		DrawMap();					//加载地图后显示界面
+		initSmallMap();				//加載小地圖
 	}
-	else {
-		//设置 自定义地图
-	}
-	int nLive = 1;//判断是否死掉，将其在地图中也清掉;
+	ShowCursor(false);
+	map.OpenMap();					//读档
+	int nLive = 1;					//判断是否死掉，将其在地图中也清掉;
 	while (nLive) {
 		//1.获取用户输入
-		GetPlay();
+		GetPlay(speed);
 		//2.根据当前获取的下标在屏幕上清空掉
 		objSnake.ClearSnake();
 		//3.根据蛇的方向去移动蛇
 		nLive = objSnake.MoveSnake(nMap, m_objFood);
 		//4.根据新坐标将蛇传递过去
-		objSnake.DrawSnake();
+		if (nLive != 0)objSnake.DrawSnake();
 		//5.创建一个食物出来
 		m_objFood.CreateFood(nMap);
-		//吃到食物就去++
-		if (m_objFood.getFoodExist() == 1) {
+		//吃到食物就++
+		if (nLive != 0 && m_objFood.getFoodExist() == 1) {
 			objSnake.AddFootNake();
-			WriteChar(50, 12, objSnake.getScoreNake(), FOREGROUND_RED);//设置分数
-			WriteChar(50, 13, objSnake.getFootNake(), FOREGROUND_RED);//设置步数
+			WriteChar(50, 12, objSnake.getScoreNake(), FOREGROUND_GREEN);//设置分数
+			WriteChar(50, 13, objSnake.getFootNake(), FOREGROUND_GREEN);//设置步数
 		}
-		Sleep(speed);
+
+		Sleep(objSnake.getAutoSpeed() == true ? 0 : speed);
+		objSnake.setAutoSpeed(false);
 	}
 }

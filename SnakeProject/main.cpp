@@ -4,8 +4,8 @@
 #include "Map.h"
 #include <Windows.h>
 #include "CAre.h"
-#pragma comment(lib,"winmm.lib")//导入音乐文件库
 #include <mmsystem.h>
+#pragma comment(lib,"winmm.lib")//导入音乐文件库
 
 using std::cout;
 using std::cin;
@@ -13,7 +13,7 @@ using std::endl;
 
 int main()
 {
-	PlaySound(TEXT("7895.wav"),NULL, SND_ASYNC | SND_NODEFAULT | SND_FILENAME); //播放音乐实现功能
+	PlaySound(TEXT("7895.wav"), NULL, SND_ASYNC | SND_NODEFAULT | SND_FILENAME); //播放音乐实现功能
 	CAre objCAre;
 	Map map;
 	system("title 贪吃蛇快跑");

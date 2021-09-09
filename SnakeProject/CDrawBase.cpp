@@ -2,30 +2,30 @@
 #include <stdio.h>
 
 //输出char界面
-void WriteChar(int x, int y, const char* szInfo, int color) {	//实现一个能够在屏幕任何位置输出字符串的函数
-	COORD pos = { x * 2 ,y };									//获取x,y的坐标的值，保存两个坐标
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);				//获得了输出句柄(控制台的屏幕！)
-	SetConsoleCursorPosition(hOut, pos);						//设置光标的下标位置
+void WriteChar(int x, int y, const char* szInfo, int color) {
+	COORD pos = { x * 2 ,y };
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hOut, pos);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-	cout << szInfo;									//输出字符串
+	cout << szInfo;
 }
 
 //double输出char界面
-void WriteChar(int x, int y, double szInfo, int color) {	//实现一个能够在屏幕任何位置输出字符串的函数
-	COORD pos = { x * 2 ,y };									//获取x,y的坐标的值，保存两个坐标
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);				//获得了输出句柄(控制台的屏幕！)
-	SetConsoleCursorPosition(hOut, pos);						//设置光标的下标位置
+void WriteChar(int x, int y, double szInfo, int color) {
+	COORD pos = { x * 2 ,y };
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hOut, pos);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-	cout << szInfo;										//输出字符串
+	cout << szInfo;
 }
 
 //字符输出char界面
-void WriteChar(int x, int y, string szInfo, int color) {	//实现一个能够在屏幕任何位置输出字符串的函数
-	COORD pos = { x * 2 ,y };									//获取x,y的坐标的值，保存两个坐标
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);				//获得了输出句柄(控制台的屏幕！)
-	SetConsoleCursorPosition(hOut, pos);						//设置光标的下标位置
+void WriteChar(int x, int y, string szInfo, int color) {
+	COORD pos = { x * 2 ,y };
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hOut, pos);
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
-	cout << szInfo;										//输出字符串
+	cout << szInfo;
 }
 
 //清空颜色
@@ -171,5 +171,4 @@ int PrintSaveGameText(int x, int y, int code)
 			break;
 		}
 	}
-
 }

@@ -22,6 +22,7 @@ using std::string;
 #define 食物			1
 #define 障碍物			2
 #define 自己			3
+#define 对象			4
 
 //清楚颜色，默认为黑色0
 void clearColor();
@@ -55,3 +56,6 @@ int UpDownSelect(short posX, short posY, vector<string> strs, int gap);
 
 //输出游戏文本
 int PrintSaveGameText(int x, int y, int code);
+
+//清掉坐标
+void clearXY();
